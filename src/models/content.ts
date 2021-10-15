@@ -1,11 +1,15 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document, Model } from "mongoose";
+
+export interface IContent extends Document{
+    title: string,
+    data: string,
+    view: number,
+    photo: string,
+    text: string,
+    lang_id: string
+}
 
 const contentSchema = new Schema({
-    content_id: {
-        type: String,
-        reqiured: true,
-        unique: true
-    },
     title: {type: String},
     data: {type: String}, // data
     view: {type: Number},
@@ -14,4 +18,4 @@ const contentSchema = new Schema({
     lang_id: {type: String}
 });
 
-export const Contents = model('contents', contentSchema);
+export const Contents: Model<IContent> = model<IContent>('contents', contentSchema);

@@ -1,4 +1,11 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document, Model } from "mongoose";
+
+export interface ITrCon extends Document{
+    content_id: string,
+    lang_id: string,
+    title: string,
+    text: string
+}
 
 const trContentSchema = new Schema({
     content_id: {type: String},
@@ -7,4 +14,4 @@ const trContentSchema = new Schema({
     text: {type: String}
 });
 
-export const trContent = model('trContent', trContentSchema);
+export const trContent: Model<ITrCon> = model<ITrCon>('trContent', trContentSchema);

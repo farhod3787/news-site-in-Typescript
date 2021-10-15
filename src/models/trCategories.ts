@@ -1,4 +1,10 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document, Model } from "mongoose";
+
+export interface ITrCat extends Document{
+    source_id: string,
+    lang_id: string,
+    source_name: string
+}
 
 const trCategorySchema = new Schema({
     source_id: {
@@ -8,4 +14,4 @@ const trCategorySchema = new Schema({
     source_name: {type: String}
 });
 
-export const Translate = model('translate', trCategorySchema);
+export const Translate: Model<ITrCat> = model<ITrCat>('translate', trCategorySchema);

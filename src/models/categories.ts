@@ -1,14 +1,13 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document, Model } from "mongoose";
+
+export interface ICategories extends Document{
+    name: string
+}
 
 const catSchema = new Schema({
-    category_id: {
-        type: String,
-        reqired: true,
-        unique: true
-    },
     name: {
         type: String
     }
 });
 
-export const Categories = model('categories', catSchema);
+export const Categories: Model<ICategories> = model<ICategories>('categories', catSchema);

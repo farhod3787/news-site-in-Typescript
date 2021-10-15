@@ -1,15 +1,21 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document, Model } from "mongoose";
+
+export interface ILang extends Document{
+    name: string,
+    short_name: string
+}
 
 const langSchema = new Schema({
-    lang_id: {
-        type: String,
-        required: true,
-        unique: true
-    },
     name: {
         type: String,
-        reqired: true
+        reqired: true,
+        unique: true
+    },
+    short_name: {
+        type: String,
+        reqired: true,
+        unique: true
     }
 });
 
-export const Languages = model('languages', langSchema);
+export const Languages: Model<ILang> = model<ILang>('languages', langSchema);
