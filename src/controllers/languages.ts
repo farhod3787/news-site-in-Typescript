@@ -2,8 +2,9 @@ import { BaseController, ICustomResponse } from "./baseControllers";
 import { NextFunction, Router } from "express";
 import { Language } from "../models/languages";
 import * as Joi from 'Joi';
-import { BadRequest } from "../http-status";
+import { BadRequest, DuplicateError, NotFound } from "../http-status";
 import { LangRequest } from "../interfaces";
+import { message } from "../messages";
 
 const ValidateLanguage = Joi.object({
   name: Joi.string().min(3).required(),
@@ -19,14 +20,14 @@ export class LangController extends BaseController {
         name: value.name,
         short_name: value.short_name
       })
-      await lang.save();
-
-      res.status(200).send({
-        message: "Successfully requested",
-        status: 200
+      lang.save()
+      .then(() => {
+        res.status(200).send(message.created);
+      }).catch( err => {
+        if (err.code = 11000) next(new DuplicateError("Duplicate error"))
       })
     } else {
-      next(new BadRequest(error));
+      next(new BadRequest(error.details[0].message));
     }
   }
 
@@ -35,46 +36,36 @@ export class LangController extends BaseController {
     if(langs.length) {
       res.status(200).send(langs);
     } else {
-      res.status(200).send({
-        message: 'Languages not found',
-        status: 200
-      })
+      next(new NotFound('Not found'));
     }
   }
 
   async getLang(req: LangRequest, res: ICustomResponse, next: NextFunction) {
     const lang = await Language.findById(req.params.id);
-      res.status(200).send(lang);
-      // error xolatini tekshirish kerak 
+    if (!lang) next(new BadRequest('Language not found'))
+      
+    res.status(200).send(lang);
   }
 
   async update(req: LangRequest, res:ICustomResponse, next: NextFunction) {
     const { error, value } = ValidateLanguage.validate(req.body);
     
     if(!error) {
-      await Language.findByIdAndUpdate(req.params.id, {$set: value});
+      const lang = await Language.findByIdAndUpdate(req.params.id, {$set: value});
+      if(!lang) next(new BadRequest('Language not found'))
 
-      res.status(200).send({
-        message: 'Successfully updated',
-        status: 200
-      })
+      res.status(200).send(message.updated)
     } else {
       next(new BadRequest(error));
     }
   }
 
   async delete(req: LangRequest, res: ICustomResponse, next: NextFunction) {
-    Language.findByIdAndDelete(req.params.id)
-      .then( () => {
-        res.status(200).send({
-          message: 'Data is successfully deleted',
-          status: 200
-        })
-      })
-      .catch( error => {
-      next(new BadRequest(error));
-    });
-  }
+    const lang = await Language.findByIdAndDelete(req.params.id)
+      if(!lang) next(new NotFound('Data not found'));
+
+      res.status(200).send(message.deleted);
+    }
 
   get routes(): Router {
     this.router.post('/', this.create);
