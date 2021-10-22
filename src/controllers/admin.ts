@@ -4,6 +4,7 @@ import { Admin } from '../models/admin';
 import { AdminRequest } from '../interfaces';
 import * as Joi from 'joi';
 import { BadRequest } from "../http-status";
+import { message } from "../messages";
 
 const ValidateAdmin = Joi.object({
   login: Joi.string().min(3).required(),
@@ -19,26 +20,25 @@ export class AdminController extends BaseController {
         login: value.login,
         password: value.password
       })
-      await admin.save();
-      
-      res.status(200).send({
-        message: 'Successful request',
-        status: 200, 
-        admin
-      });
-
+      try {
+        await admin.save();
+        res.status(200).send(message.created);
+      }
+      catch (err) {
+        next(new BadRequest(err));
+      }
     } else {
       next(new BadRequest(error));
     }
   }
 
   async deleteAdmin(req: AdminRequest, res: ICustomResponse, next: NextFunction) {    
-    await Admin.findByIdAndDelete(req.params.id);
-    res.status(200).send({
-      message: 'Successfull request',
-      status: 200
-    });
-    //res.respondDeleted(await Admin.findByIdAndDelete(req.admin._id));
+    try{
+      await Admin.findByIdAndDelete(req.params.id);
+      res.status(200).send(message.deleted);
+    } catch(err) {
+      next(new BadRequest(err))
+    }
   }
 
   async updateAdmin(req: AdminRequest, res: ICustomResponse, next: NextFunction) {
@@ -50,14 +50,12 @@ export class AdminController extends BaseController {
         login: value. login,
         password: value.password
       });
-      
-      await Admin.findByIdAndUpdate(admin._id, {$set: admin});
-
-      res.status(200).send({
-        message: 'Successfull request',
-        status: 200
-      });
-      //res.respondUpdated(admin);
+      try {
+        await Admin.findByIdAndUpdate(admin._id, {$set: admin});
+        res.status(200).send(message.updated);
+      } catch (err) { 
+        next(new BadRequest(err));
+      }
     } else {  
       next(new BadRequest(error));
     }

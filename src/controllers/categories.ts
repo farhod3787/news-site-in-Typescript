@@ -18,16 +18,14 @@ export class CategoryController extends BaseController {
       const category = new Categories({
         name: value.name 
       });
-
-      category.save()
-      .then( () => {
+      try {
+        await category.save();
         res.status(200).send(message.created);
-      })
-      .catch(error => {
-        if(error.code =  11000) next(new DuplicateError('Duplicate error'));
+      } catch(err) {
+        if(err.code =  11000) next(new DuplicateError('Duplicate error'));
         
-        next(new BadRequest(error));
-      })
+        next(new BadRequest(err));
+      }
     } else {
       next(new BadRequest(error));
     }

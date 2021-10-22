@@ -20,12 +20,13 @@ export class LangController extends BaseController {
         name: value.name,
         short_name: value.short_name
       })
-      lang.save()
-      .then(() => {
+      try {
+        await lang.save();
         res.status(200).send(message.created);
-      }).catch( err => {
-        if (err.code = 11000) next(new DuplicateError("Duplicate error"))
-      })
+      } catch(err) {
+        if (err.code = 11000) next(new DuplicateError("Duplicate error"));
+        next(new BadRequest('Error in save new data'));
+      }
     } else {
       next(new BadRequest(error.details[0].message));
     }

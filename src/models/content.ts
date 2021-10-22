@@ -10,12 +10,24 @@ export interface IContent extends Document{
 }
 
 const contentSchema = new Schema({
-    title: {type: String},
-    data: {type: String}, // data
+    title: {
+        type: String,
+        required: true
+    },
+    data: {
+        type: String,
+        required: true
+    }, // data
     view: {type: Number},
     photo: {type: String},
-    text: {type: String},
-    lang_id: {type: String}
+    text: {
+        type: String,
+        required: true
+    },
+    lang_id: {
+        type: String,
+        required: true
+    }
 });
 
 export const Contents: Model<IContent> = model<IContent>('contents', contentSchema);
