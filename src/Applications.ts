@@ -7,6 +7,7 @@ import config from './config';
 import { AdminController } from './controllers/admin';
 import { LangController } from './controllers/languages';
 import { CategoryController } from './controllers/categories';
+import { ContentController } from './controllers/content';
 
 class Applications {
 private readonly app: express.Application;
@@ -30,6 +31,7 @@ private readonly app: express.Application;
     this.app.use(`/api/${v}/admin`, new AdminController().routes);
     this.app.use(`/api/${v}/language`, new LangController().routes);
     this.app.use(`/api/${v}/category`, new CategoryController().routes);
+    this.app.use(`/api/${v}/content`, new ContentController().routes);
   }
 
   get instance() {

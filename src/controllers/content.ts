@@ -12,7 +12,7 @@ const validateContent = Joi.object({
   text: Joi.string().min(10).required(),
   lang_id: Joi.string().min(3).required()
 })
-
+  
 export class ContentController extends BaseController {
   async create(req: ContentRequest, res: Response, next: NextFunction) {
     const { error, value } = validateContent.validate(req.body);
@@ -31,7 +31,7 @@ export class ContentController extends BaseController {
         next(new BadRequest(err))
       }
     } else {
-      next(new BadRequest(error))
+      res.status(400).send(error.details[0].message);
     }
   }
 
@@ -45,6 +45,18 @@ export class ContentController extends BaseController {
     }
   }
 
+  async getList(req: ContentRequest, res: Response, next: NextFunction) {
+    try {
+      const contents = await Contents.find();
+      if(!contents.length) { res.status(200).send({
+        message: 'Contents not found'
+      }) } else {
+      res.status(200).send(contents); }
+    } catch (error) {
+      next(new NotFound(error));
+    }
+  }
+
   async delete(req: ContentRequest, res: Response, next: NextFunction) {
     try {
       await Contents.findByIdAndDelete(req.params.id);
@@ -55,10 +67,28 @@ export class ContentController extends BaseController {
     }
   }
 
+  async update(req: ContentRequest, res: Response, next: NextFunction){
+    const {error, value } = validateContent.validate(req.body);
+
+    if(!error) {
+      try{
+        await Contents.findByIdAndUpdate(req.params.id, { $set: value });
+
+        res.status(200).send(message.updated);
+      } catch(err) {
+        next(new NotFound('Not found'));
+      }
+    } else {
+      next(new BadRequest(error));
+    }
+  }
+
   get routes(): Router {  
     this.router.post('/', this.create);
+    this.router.get('/', this.getList);
     this.router.get('/:id', this.get);
     this.router.delete('/:id', this.delete);
+    this.router.patch('/:id', this.update);
 
     return this.router;
   }

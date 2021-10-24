@@ -3,9 +3,10 @@ import { IAdmin } from "../models/admin";
 import { ILang } from "../models/languages";
 import { ICategories } from "../models/categories";
 import { IContent } from '../models/content';
+import { ITrCat } from '../models/trCategory';
 
 export interface AdminRequest extends Request {
-  admin: IAdmin
+  admin: IAdmin 
 }
 
 export interface LangRequest extends Request {
@@ -18,4 +19,8 @@ export interface CategoryRequest extends Request {
 
 export interface ContentRequest extends Request {
   content: IContent
+}
+
+export interface trCatRequest extends Request {
+  trCat: ITrCat
 }
