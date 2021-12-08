@@ -1,5 +1,5 @@
 import config from "./config";
-import {App} from './Applications';
+import { App } from './Applications';
 import * as mongoose from 'mongoose';
 
 mongoose.connect(

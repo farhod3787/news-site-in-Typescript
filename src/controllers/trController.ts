@@ -34,6 +34,10 @@ export class trCatController extends BaseController {
     }
   }
 
+  async update(req: trCatRequest, res: Response, next: NextFunction) {
+    
+  }
+
 
   get routes() : Router {
 
